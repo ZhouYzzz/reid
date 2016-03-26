@@ -1,0 +1,6 @@
+*.caffemodel
+*.solverstate
+*.mdb
+*.swp
+*.pyc
+*.txt
