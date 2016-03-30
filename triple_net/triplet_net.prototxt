@@ -1,0 +1,463 @@
+name: "triple_net"
+
+# ===== DATA =====
+
+# input: "ANCHOR/data"
+# input_shape {
+#     dim: 10
+#     dim: 3
+#     dim: 256
+#     dim: 128
+# }
+# input: "POSITIVE/data"
+# input_shape {
+#     dim: 10
+#     dim: 3
+#     dim: 256
+#     dim: 128
+# }
+# input: "NEGATIVE/data"
+# input_shape {
+#     dim: 10
+#     dim: 3
+#     dim: 256
+#     dim: 128
+# }
+layer {
+	name: "ANCHOR/data"
+	type: "ImageData"
+	top: "ANCHOR/data"
+	image_data_param {
+		source: "reid_a.txt"
+		batch_size: 32
+	}
+}
+layer {
+	name: "POSITIVE/data"
+	type: "ImageData"
+	top: "POSITIVE/data"
+	image_data_param {
+		source: "reid_a.txt"
+		batch_size: 32
+	}
+}
+layer {
+	name: "NEGATIVE/data"
+	type: "ImageData"
+	top: "NEGATIVE/data"
+	image_data_param {
+		source: "reid_a.txt"
+		batch_size: 32
+	}
+}
+# ===== ANCHOR =====
+
+layer {
+    name: "ANCHOR/conv1"
+    type: "Convolution"
+    bottom: "ANCHOR/data"
+    top: "ANCHOR/conv1"
+    param { name: "conv1_W" }
+    param { name: "conv1_b" }
+    convolution_param {
+        num_output: 64
+        kernel_size: 5
+        weight_filler {
+            type: "gaussian"
+            std: 0.01
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+}
+layer {
+    name: "ANCHOR/relu_conv1"
+    type: "ReLU"
+    bottom: "ANCHOR/conv1"
+    top: "ANCHOR/conv1"
+}
+layer {
+    name: "ANCHOR/pool1"
+    type: "Pooling"
+    bottom: "ANCHOR/conv1"
+    top: "ANCHOR/pool1"
+    pooling_param {
+        pool: MAX
+        kernel_size: 2
+        stride: 1
+    }
+}
+layer {
+    name: "ANCHOR/conv2"
+    type: "Convolution"
+    bottom: "ANCHOR/pool1"
+    top: "ANCHOR/conv2"
+    param { name: "conv2_W" }
+    param { name: "conv2_b" }
+    convolution_param {
+        num_output: 128
+        kernel_size: 3
+        weight_filler {
+            type: "gaussian"
+            std: 0.01
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+}
+layer {
+    name: "ANCHOR/relu_conv2"
+    type: "ReLU"
+    bottom: "ANCHOR/conv2"
+    top: "ANCHOR/conv2"
+}
+layer {
+    name: "ANCHOR/pool2"
+    type: "Pooling"
+    bottom: "ANCHOR/conv2"
+    top: "ANCHOR/pool2"
+    pooling_param {
+        pool: MAX
+        kernel_size: 2
+        stride: 1
+    }
+}
+layer {
+    name: "ANCHOR/conv3"
+    type: "Convolution"
+    bottom: "ANCHOR/pool2"
+    top: "ANCHOR/conv3"
+    param { name: "conv3_W" }
+    param { name: "conv3_b" }
+    convolution_param {
+        num_output: 256
+        kernel_size: 3
+        weight_filler {
+            type: "gaussian"
+            std: 0.01
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+}
+layer {
+    name: "ANCHOR/relu_conv3"
+    type: "ReLU"
+    bottom: "ANCHOR/conv3"
+    top: "ANCHOR/conv3"
+}
+layer {
+    name: "ANCHOR/pool3"
+    type: "Pooling"
+    bottom: "ANCHOR/conv3"
+    top: "ANCHOR/pool3"
+    pooling_param {
+        pool: MAX
+        kernel_size: 2
+        stride: 1
+    }
+}
+layer {
+    name: "ANCHOR/conv4"
+    type: "Convolution"
+    bottom: "ANCHOR/pool3"
+    top: "ANCHOR/conv4"
+    param { name: "conv4_W" }
+    param { name: "conv4_b" }
+    convolution_param {
+        num_output: 128
+        kernel_size: 2
+        weight_filler {
+            type: "gaussian"
+            std: 0.01
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+}
+
+# ===== POSITIVE =====
+
+layer {
+    name: "POSITIVE/conv1"
+    type: "Convolution"
+    bottom: "POSITIVE/data"
+    top: "POSITIVE/conv1"
+    param { name: "conv1_W" }
+    param { name: "conv1_b" }
+    convolution_param {
+        num_output: 64
+        kernel_size: 5
+        weight_filler {
+            type: "gaussian"
+            std: 0.01
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+}
+layer {
+    name: "POSITIVE/relu_conv1"
+    type: "ReLU"
+    bottom: "POSITIVE/conv1"
+    top: "POSITIVE/conv1"
+}
+layer {
+    name: "POSITIVE/pool1"
+    type: "Pooling"
+    bottom: "POSITIVE/conv1"
+    top: "POSITIVE/pool1"
+    pooling_param {
+        pool: MAX
+        kernel_size: 2
+        stride: 1
+    }
+}
+layer {
+    name: "POSITIVE/conv2"
+    type: "Convolution"
+    bottom: "POSITIVE/pool1"
+    top: "POSITIVE/conv2"
+    param { name: "conv2_W" }
+    param { name: "conv2_b" }
+    convolution_param {
+        num_output: 128
+        kernel_size: 3
+        weight_filler {
+            type: "gaussian"
+            std: 0.01
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+}
+layer {
+    name: "POSITIVE/relu_conv2"
+    type: "ReLU"
+    bottom: "POSITIVE/conv2"
+    top: "POSITIVE/conv2"
+}
+layer {
+    name: "POSITIVE/pool2"
+    type: "Pooling"
+    bottom: "POSITIVE/conv2"
+    top: "POSITIVE/pool2"
+    pooling_param {
+        pool: MAX
+        kernel_size: 2
+        stride: 1
+    }
+}
+layer {
+    name: "POSITIVE/conv3"
+    type: "Convolution"
+    bottom: "POSITIVE/pool2"
+    top: "POSITIVE/conv3"
+    param { name: "conv3_W" }
+    param { name: "conv3_b" }
+    convolution_param {
+        num_output: 256
+        kernel_size: 3
+        weight_filler {
+            type: "gaussian"
+            std: 0.01
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+}
+layer {
+    name: "POSITIVE/relu_conv3"
+    type: "ReLU"
+    bottom: "POSITIVE/conv3"
+    top: "POSITIVE/conv3"
+}
+layer {
+    name: "POSITIVE/pool3"
+    type: "Pooling"
+    bottom: "POSITIVE/conv3"
+    top: "POSITIVE/pool3"
+    pooling_param {
+        pool: MAX
+        kernel_size: 2
+        stride: 1
+    }
+}
+layer {
+    name: "POSITIVE/conv4"
+    type: "Convolution"
+    bottom: "POSITIVE/pool3"
+    top: "POSITIVE/conv4"
+    param { name: "conv4_W" }
+    param { name: "conv4_b" }
+    convolution_param {
+        num_output: 128
+        kernel_size: 2
+        weight_filler {
+            type: "gaussian"
+            std: 0.01
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+}
+
+# ===== NEGATIVE =====
+
+layer {
+    name: "NEGATIVE/conv1"
+    type: "Convolution"
+    bottom: "NEGATIVE/data"
+    top: "NEGATIVE/conv1"
+    param { name: "conv1_W" }
+    param { name: "conv1_b" }
+    convolution_param {
+        num_output: 64
+        kernel_size: 5
+        weight_filler {
+            type: "gaussian"
+            std: 0.01
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+}
+layer {
+    name: "NEGATIVE/relu_conv1"
+    type: "ReLU"
+    bottom: "NEGATIVE/conv1"
+    top: "NEGATIVE/conv1"
+}
+layer {
+    name: "NEGATIVE/pool1"
+    type: "Pooling"
+    bottom: "NEGATIVE/conv1"
+    top: "NEGATIVE/pool1"
+    pooling_param {
+        pool: MAX
+        kernel_size: 2
+        stride: 1
+    }
+}
+layer {
+    name: "NEGATIVE/conv2"
+    type: "Convolution"
+    bottom: "NEGATIVE/pool1"
+    top: "NEGATIVE/conv2"
+    param { name: "conv2_W" }
+    param { name: "conv2_b" }
+    convolution_param {
+        num_output: 128
+        kernel_size: 3
+        weight_filler {
+            type: "gaussian"
+            std: 0.01
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+}
+layer {
+    name: "NEGATIVE/relu_conv2"
+    type: "ReLU"
+    bottom: "NEGATIVE/conv2"
+    top: "NEGATIVE/conv2"
+}
+layer {
+    name: "NEGATIVE/pool2"
+    type: "Pooling"
+    bottom: "NEGATIVE/conv2"
+    top: "NEGATIVE/pool2"
+    pooling_param {
+        pool: MAX
+        kernel_size: 2
+        stride: 1
+    }
+}
+layer {
+    name: "NEGATIVE/conv3"
+    type: "Convolution"
+    bottom: "NEGATIVE/pool2"
+    top: "NEGATIVE/conv3"
+    param { name: "conv3_W" }
+    param { name: "conv3_b" }
+    convolution_param {
+        num_output: 256
+        kernel_size: 3
+        weight_filler {
+            type: "gaussian"
+            std: 0.01
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+}
+layer {
+    name: "NEGATIVE/relu_conv3"
+    type: "ReLU"
+    bottom: "NEGATIVE/conv3"
+    top: "NEGATIVE/conv3"
+}
+layer {
+    name: "NEGATIVE/pool3"
+    type: "Pooling"
+    bottom: "NEGATIVE/conv3"
+    top: "NEGATIVE/pool3"
+    pooling_param {
+        pool: MAX
+        kernel_size: 2
+        stride: 1
+    }
+}
+layer {
+    name: "NEGATIVE/conv4"
+    type: "Convolution"
+    bottom: "NEGATIVE/pool3"
+    top: "NEGATIVE/conv4"
+    param { name: "conv4_W" }
+    param { name: "conv4_b" }
+    convolution_param {
+        num_output: 128
+        kernel_size: 2
+        weight_filler {
+            type: "gaussian"
+            std: 0.01
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+}
+
+# ===== TRIPLET_LOSS =====
+
+layer {
+    name: "loss"
+    type: "TripletLoss"
+    bottom: "ANCHOR/conv4"
+    bottom: "POSITIVE/conv4"
+    bottom: "NEGATIVE/conv4"
+}

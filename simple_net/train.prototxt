@@ -1,0 +1,244 @@
+name: "simple-reid"
+layer {
+    name: "pair_data"
+    type: "Data"
+	include {
+		phase: TRAIN
+	}
+    data_param {
+        source: "lmdb_reid_train_shuf"
+        batch_size: 64
+        backend: LMDB
+    }
+    top: "pair_data"
+    top: "label"
+}
+layer {
+    name: "pair_data"
+    type: "Data"
+	include {
+		phase: TEST
+	}
+    data_param {
+        source: "lmdb_reid_test_shuf"
+        batch_size: 64
+        backend: LMDB
+    }
+    top: "pair_data"
+    top: "label"
+}
+layer {
+    name: "slice_pair"
+    type: "Slice"
+    bottom: "pair_data"
+    slice_param {
+        slice_dim: 1
+        slice_point: 3
+    }
+    top: "data_A"
+    top: "data_B"
+}
+
+# ===== A =====
+
+layer {
+    name: "conv1_A"
+    type: "Convolution"
+    bottom: "data_A"
+    param {
+        name: "conv1"
+    }
+    convolution_param {
+        num_output: 32
+        kernel_size: 5
+        stride: 2
+        weight_filler {
+            type: "gaussian"
+            std: 0.01
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+    top: "conv1_A"
+}
+layer {
+    name: "pool1_A"
+    type: "Pooling"
+    bottom: "conv1_A"
+    pooling_param {
+        pool: MAX
+        kernel_size: 2
+        stride: 1
+    }
+    top: "pool1_A"
+}
+layer {
+    name: "conv2_A"
+    type: "Convolution"
+    bottom: "pool1_A"
+    param {
+        name: "conv2"
+    }
+    convolution_param {
+        num_output: 32
+        kernel_size: 5
+        stride: 1
+        weight_filler {
+            type: "gaussian"
+            std: 0.01
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+    top: "conv2_A"
+}
+layer {
+    name: "pool2_A"
+    type: "Pooling"
+    bottom: "conv2_A"
+    pooling_param {
+        pool: MAX
+        kernel_size: 2
+        stride: 1
+    }
+    top: "pool2_A"
+}
+
+# ===== FC =====
+
+layer {
+    name: "fc_A"
+    type: "InnerProduct"
+    bottom: "pool2_A"
+    param {
+        name: "fc"
+    }
+    inner_product_param {
+        num_output: 400
+    }
+    top: "feat_A"
+}
+
+# ===== B =====
+
+layer {
+    name: "conv1_B"
+    type: "Convolution"
+    bottom: "data_B"
+    param {
+        name: "conv1"
+    }
+    convolution_param {
+        num_output: 32
+        kernel_size: 5
+        stride: 2
+        weight_filler {
+            type: "gaussian"
+            std: 0.01
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+    top: "conv1_B"
+}
+layer {
+    name: "pool1_B"
+    type: "Pooling"
+    bottom: "conv1_B"
+    pooling_param {
+        pool: MAX
+        kernel_size: 2
+        stride: 1
+    }
+    top: "pool1_B"
+}
+layer {
+    name: "conv2_B"
+    type: "Convolution"
+    bottom: "pool1_B"
+    param {
+        name: "conv2"
+    }
+    convolution_param {
+        num_output: 32
+        kernel_size: 5
+        stride: 1
+        weight_filler {
+            type: "gaussian"
+            std: 0.01
+        }
+        bias_filler {
+            type: "constant"
+            value: 0
+        }
+    }
+    top: "conv2_B"
+}
+layer {
+    name: "pool2_B"
+    type: "Pooling"
+    bottom: "conv2_B"
+    pooling_param {
+        pool: MAX
+        kernel_size: 2
+        stride: 1
+    }
+    top: "pool2_B"
+}
+
+# ===== FC =====
+
+layer {
+    name: "fc_B"
+    type: "InnerProduct"
+    bottom: "pool2_B"
+    param {
+        name: "fc"
+    }
+    inner_product_param {
+        num_output: 400
+    }
+    top: "feat_B"
+}
+
+# ===== LOSS =====
+
+layer {
+    name: "concat"
+    type: "Concat"
+    bottom: "feat_A"
+    bottom: "feat_B"
+    top: "concat"
+}
+layer {
+	name: "sim"
+	type: "InnerProduct"
+	bottom: "concat"
+	inner_product_param {
+		num_output: 2
+	}
+	top: "sim"
+}
+layer {
+	name: "acc"
+	type: "Accuracy"
+	bottom: "sim"
+	bottom: "label"
+	top: "accuracy"
+	include {
+		phase: TEST
+	}
+}
+layer {
+	name: "loss"
+	type: "SoftmaxWithLoss"
+	bottom: "sim"
+	bottom: "label"
+	top: "loss"
+}

@@ -11,8 +11,8 @@ layer {
     scale: 0.00390625
   }
   data_param {
-    source: "lmdb_all"
-    batch_size: 256
+    source: "lmdb_VIPeR_a"
+    batch_size: 100
     backend: LMDB
   }
 }

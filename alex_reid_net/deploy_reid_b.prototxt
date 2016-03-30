@@ -1,7 +1,7 @@
 name: "AlexNet"
 layer {
   name: "data"
-  type: "Data"
+  type: "ImageData"
   top: "data"
   top: "label"
   include {
@@ -10,10 +10,9 @@ layer {
   transform_param {
     scale: 0.00390625
   }
-  data_param {
-    source: "lmdb_all"
-    batch_size: 256
-    backend: LMDB
+  image_data_param {
+    source: "reid_b.txt"
+    batch_size: 200
   }
 }
 layer {

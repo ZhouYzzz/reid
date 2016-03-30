@@ -14,9 +14,10 @@ import numpy as np
 import pandas as pd
 
 caffe.set_mode_gpu()
-caffe.set_device(0)
+caffe.set_device(2)
 
-net = caffe.Net('reid_siamese.prototxt', 'snapshots/reid_iter_100000.caffemodel', caffe.TEST)
+net = caffe.Net('deploy.prototxt',\
+                'snapshots/stage1_alex_reid_iter_100000.caffemodel', caffe.TEST)
 
 dim = net.blobs['feat'].data.shape[1]
 
@@ -31,4 +32,4 @@ for i in xrange(1484):
     info = np.hstack((label,feat))
     result = np.vstack((result, info))
 
-np.savetxt('result.txt', result)
+np.save('result', result)
